@@ -5,8 +5,8 @@ dnf install boost-devel -y
 
 
 cd /root
-git clone https://github.com/DeadCodeProductions/callchain_checker.git
-cd callchain_checker
+git clone https://github.com/DeadCodeProductions/callchain-checker.git
+cd callchain-checker
 git checkout "$REVISION"
 mkdir build
 cd build
