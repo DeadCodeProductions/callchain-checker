@@ -1,0 +1,20 @@
+on: [ push ]
+name: Run Python Tests
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: build instrumenter
+        run: |
+          sudo apt update
+          sudo apt remove clang-13 llvm-13 llvm-12
+          sudo apt-get install llvm-14 ninja-build clang-14 libclang-14-dev libclang-cpp14-dev clang++-14 clang-14 libboost-all-dev
+          python -m pip install build
+          CC=clang-14 CXX=clang++-14 ./build_python_wheel_local.sh
+      - run: python -m pip install . pytest
+      - name: run pytest
+        run: python -m pytest python_src/test
