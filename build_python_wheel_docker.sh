@@ -5,8 +5,8 @@ dnf install boost-devel -y
 
 
 cd /root
-git clone https://github.com/DeadCodeProductions/callchain_checker.git
-cd callchain_checker
+git clone https://github.com/DeadCodeProductions/callchain-checker.git
+cd callchain-checker
 git checkout "$REVISION"
 mkdir build
 cd build
@@ -16,7 +16,7 @@ cmake -G Ninja .. -DCMAKE_BUILD_TYPE=Release \
                   -DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc -static-libstdc++"
 ninja 
 cd ..
-cp build/bin/ccc python_src/callchain_checker
+cp build/bin/ccc python_src/callchain-checker
 cp setup.py.in setup.py
 sed -i "s~THIS_DIR~$(pwd)~g" setup.py
 
