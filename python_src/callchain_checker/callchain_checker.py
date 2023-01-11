@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from typing import Optional
 from pathlib import Path
+from typing import Optional
 
-from diopter.compiler import SourceProgram, CompilerExe, ClangTool, ClangToolMode
+from diopter.compiler import ClangTool, ClangToolMode, CompilerExe, SourceProgram
 
 
 def get_callchain_checker(
@@ -11,8 +11,9 @@ def get_callchain_checker(
 ) -> ClangTool:
     if not callchain_checker:
         if not clang:
+            # TODO: need to check clang version, maybe supply multiple binaries?
             clang = CompilerExe.get_system_clang()
-        callchain_checker = ClangTool.init_with_paths_from_llvm(
+        callchain_checker = ClangTool.init_with_paths_from_clang(
             Path(__file__).parent / "ccc", clang
         )
     return callchain_checker
@@ -38,11 +39,13 @@ def callchain_exists(
         bool: whether a callchain exists
     """
     callchain_checker = get_callchain_checker(callchain_checker, clang)
+    result = callchain_checker.run_on_program(
+        program,
+        [f"--from={source_function}", f"--to={target_function}"],
+        ClangToolMode.CAPTURE_OUT_ERR,
+    )
+    assert result.stdout
     return (
         f"call chain exists between {source_function} -> {target_function}".strip()
-        in callchain_checker.run_on_program(
-            program,
-            [f"--from={source_function}", f"--to={target_function}"],
-            ClangToolMode.CAPTURE_OUT_ERR,
-        )
+        in result.stdout
     )
